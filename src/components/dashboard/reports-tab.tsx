@@ -11,6 +11,7 @@ import { IncomeExpenseChart } from "./income-expense-chart";
 import { IncomeBreakdownChart } from "./income-breakdown-chart";
 import { TransactionHistory } from "./transaction-history";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { TopCategories } from './top-categories';
 
 interface ReportsTabProps {
   transactions: Transaction[];
@@ -99,6 +100,8 @@ export function ReportsTab({ transactions }: ReportsTabProps) {
 
           <IncomeExpenseChart transactions={filteredTransactions} />
           
+          <TopCategories transactions={filteredTransactions} />
+
           <div className="grid gap-6 md:grid-cols-2">
             <Card className="shadow-lg">
               <CardHeader>
