@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase";
-import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import type { Transaction } from "@/lib/data";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { SummaryCards } from "@/components/dashboard/summary-cards";
@@ -27,8 +27,7 @@ export default function DashboardPage() {
   useEffect(() => {
     if (user) {
       setIsDataLoading(true);
-      // Query updated to include orderBy. This will prompt Firestore to provide an index creation link in the browser console.
-      const q = query(collection(db, "transactions"), where("userId", "==", user.uid), orderBy("createdAt", "desc"));
+      const q = query(collection(db, "transactions"), where("userId", "==", user.uid));
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const userTransactions: Transaction[] = [];
         querySnapshot.forEach((doc) => {
@@ -39,12 +38,12 @@ export default function DashboardPage() {
             date: data.date.toDate ? data.date.toDate().toISOString() : data.date,
            } as Transaction);
         });
-        // Sorting is now handled by the Firestore query
+        // Sort transactions by date client-side
+        userTransactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         setTransactions(userTransactions);
         setIsDataLoading(false);
       }, (error) => {
         console.error("Error fetching transactions: ", error);
-        // Look for a link in the console to create the necessary index.
         setIsDataLoading(false);
       });
 
