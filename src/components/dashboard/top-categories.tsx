@@ -84,7 +84,7 @@ export function TopCategories({ transactions }: TopCategoriesProps) {
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[calc(100vh-22rem)]">
-          <div className="grid gap-8 pr-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pr-4">
               <div>
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                       Top Pengeluaran <Badge variant="destructive">Top 10</Badge>
