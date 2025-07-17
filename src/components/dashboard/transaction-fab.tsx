@@ -38,31 +38,37 @@ export function TransactionFab() {
   };
   
   useEffect(() => {
-    if (dialogContent === 'scan') {
-      const getCameraPermission = async () => {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-          setHasCameraPermission(true);
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
-        } catch (error) {
-          console.error('Error accessing camera:', error);
-          setHasCameraPermission(false);
-          toast({
-            variant: 'destructive',
-            title: 'Akses Kamera Ditolak',
-            description: 'Mohon izinkan akses kamera di pengaturan browser Anda.',
-          });
+    let stream: MediaStream | null = null;
+    
+    const getCameraPermission = async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        setHasCameraPermission(true);
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
         }
-      };
-      getCameraPermission();
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: 'Akses Kamera Ditolak',
+          description: 'Mohon izinkan akses kamera di pengaturan browser Anda.',
+        });
+      }
+    };
 
-      return () => {
-        if (videoRef.current && videoRef.current.srcObject) {
-          const stream = videoRef.current.srcObject as MediaStream;
-          stream.getTracks().forEach(track => track.stop());
-        }
+    if (dialogContent === 'scan') {
+      getCameraPermission();
+    }
+
+    // Cleanup function to stop the camera stream
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
       }
     }
   }, [dialogContent, toast]);
