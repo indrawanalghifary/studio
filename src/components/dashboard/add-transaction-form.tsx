@@ -205,7 +205,10 @@ export function AddTransactionForm({ transactionType, onFormSubmit }: AddTransac
             <FormItem>
               <FormLabel>Deskripsi</FormLabel>
               <FormControl>
-                <Textarea placeholder="cth: Kopi dengan teman" {...field} />
+                <Textarea 
+                  placeholder={transactionType === 'income' ? 'cth: Gaji bulanan' : 'cth: Kopi dengan teman'} 
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
