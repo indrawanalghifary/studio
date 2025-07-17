@@ -35,7 +35,7 @@ const monthNames = [
 export function ReportsTab({ transactions }: ReportsTabProps) {
   const [currentTab, setCurrentTab] = useState('reports');
   const currentDate = new Date();
-  const [selectedYear, setSelectedYear] = useState<number>(currentDate.getFullYear());
+  const [selectedYear, setSelectedYear] = useState<number>(currentDate.getFullYear()); // -1 for all
   const [selectedMonth, setSelectedMonth] = useState<number>(currentDate.getMonth()); // 0-11 for Jan-Dec, -1 for all
 
   const yearOptions = useMemo(() => generateYearOptions(transactions), [transactions]);
@@ -45,7 +45,8 @@ export function ReportsTab({ transactions }: ReportsTabProps) {
 
     return transactions.filter(t => {
       const transactionDate = new Date(t.date);
-      const yearMatch = transactionDate.getFullYear() === selectedYear;
+      // -1 means all years
+      const yearMatch = selectedYear === -1 || transactionDate.getFullYear() === selectedYear;
       // -1 means all months
       const monthMatch = selectedMonth === -1 || transactionDate.getMonth() === selectedMonth;
       return yearMatch && monthMatch;
@@ -88,10 +89,11 @@ export function ReportsTab({ transactions }: ReportsTabProps) {
                   value={String(selectedYear)}
                   onValueChange={(value) => setSelectedYear(Number(value))}
                 >
-                  <SelectTrigger className="w-full sm:w-[120px]">
+                  <SelectTrigger className="w-full sm:w-[150px]">
                     <SelectValue placeholder="Pilih Tahun" />
                   </SelectTrigger>
                   <SelectContent>
+                     <SelectItem value="-1">Semua Tahun</SelectItem>
                     {yearOptions.map((year) => (
                       <SelectItem key={year} value={String(year)}>
                         {year}
