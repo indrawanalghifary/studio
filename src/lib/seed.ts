@@ -97,6 +97,62 @@ const dummyTransactions = (userId: string) => [
     userId: userId,
     createdAt: Timestamp.now(),
   },
+  // Additional Expenses - April 2024
+ {
+    amount: 40000,
+    category: 'Makanan & Minuman',
+    date: Timestamp.fromDate(new Date('2024-04-05')),
+    description: 'Sarapan di kafe',
+    type: 'expense',
+    userId: userId,
+    createdAt: Timestamp.now(),
+  },
+  {
+    amount: 180000,
+    category: 'Transportasi',
+    date: Timestamp.fromDate(new Date('2024-04-10')),
+    description: 'Tiket kereta',
+    type: 'expense',
+    userId: userId,
+    createdAt: Timestamp.now(),
+  },
+  {
+    amount: 500000,
+    category: 'Belanja',
+    date: Timestamp.fromDate(new Date('2024-04-15')),
+    description: 'Beli sepatu',
+    type: 'expense',
+    userId: userId,
+    createdAt: Timestamp.now(),
+  },
+  {
+    amount: 300000,
+    category: 'Hiburan',
+    date: Timestamp.fromDate(new Date('2024-04-20')),
+    description: 'Konser musik',
+    type: 'expense',
+    userId: userId,
+    createdAt: Timestamp.now(),
+  },
+  {
+    amount: 100000,
+    category: 'Kesehatan',
+    date: Timestamp.fromDate(new Date('2024-04-25')),
+    description: 'Vitamin',
+    type: 'expense',
+    userId: userId,
+    createdAt: Timestamp.now(),
+  },
+   // Additional Expenses - June 2024
+ {
+    amount: 55000,
+    category: 'Makanan & Minuman',
+    date: Timestamp.fromDate(new Date('2024-06-02')),
+    description: 'Makan malam',
+    type: 'expense',
+    userId: userId,
+    createdAt: Timestamp.now(),
+  },
   // Income
   {
     amount: 5000000,
@@ -124,6 +180,20 @@ const dummyTransactions = (userId: string) => [
     type: 'income',
     userId: userId,
     createdAt: Timestamp.now(),
+  },
+   // Additional Income - April 2024
+  {
+    amount: 3000000,
+    category: 'Pekerjaan Lepas',
+    date: Timestamp.fromDate(new Date('2024-04-28')),
+    description: 'Proyek penulisan konten',
+    type: 'income',
+    userId: userId,
+    createdAt: Timestamp.now(),
+  },
+  // Additional Income - June 2024
+  {
+    amount: 5200000,
   },
 ];
 

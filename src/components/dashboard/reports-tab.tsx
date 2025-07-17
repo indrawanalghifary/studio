@@ -1,3 +1,7 @@
+
+'use client';
+
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SpendingBreakdownChart } from "./spending-breakdown-chart";
@@ -6,22 +10,94 @@ import { Transaction } from "@/lib/data";
 import { IncomeExpenseChart } from "./income-expense-chart";
 import { IncomeBreakdownChart } from "./income-breakdown-chart";
 import { TransactionHistory } from "./transaction-history";
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface ReportsTabProps {
   transactions: Transaction[];
 }
 
+const generateYearOptions = (transactions: Transaction[]) => {
+  if (transactions.length === 0) {
+    return [new Date().getFullYear()];
+  }
+  const years = new Set(transactions.map(t => new Date(t.date).getFullYear()));
+  const currentYear = new Date().getFullYear();
+  years.add(currentYear);
+  return Array.from(years).sort((a, b) => b - a);
+};
+
+const monthNames = [
+  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+  "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+];
+
 export function ReportsTab({ transactions }: ReportsTabProps) {
+  const [currentTab, setCurrentTab] = useState('reports');
+  const currentDate = new Date();
+  const [selectedYear, setSelectedYear] = useState<number>(currentDate.getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState<number>(currentDate.getMonth()); // 0-11 for Jan-Dec
+
+  const yearOptions = useMemo(() => generateYearOptions(transactions), [transactions]);
+
+  const filteredTransactions = useMemo(() => {
+    if (currentTab !== 'reports') return transactions;
+
+    return transactions.filter(t => {
+      const transactionDate = new Date(t.date);
+      return transactionDate.getFullYear() === selectedYear && transactionDate.getMonth() === selectedMonth;
+    });
+  }, [transactions, selectedYear, selectedMonth, currentTab]);
+
+
   return (
-    <Tabs defaultValue="reports" className="w-full">
+    <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="reports">Laporan</TabsTrigger>
         <TabsTrigger value="history">Riwayat</TabsTrigger>
       </TabsList>
       <TabsContent value="reports">
         <div className="space-y-6 mt-4">
-          <IncomeExpenseChart transactions={transactions} />
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Filter Laporan</CardTitle>
+              <CardDescription>Pilih periode untuk menampilkan laporan.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col sm:flex-row gap-4">
+                <Select
+                  value={String(selectedMonth)}
+                  onValueChange={(value) => setSelectedMonth(Number(value))}
+                >
+                  <SelectTrigger className="w-full sm:w-[180px]">
+                    <SelectValue placeholder="Pilih Bulan" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {monthNames.map((month, index) => (
+                      <SelectItem key={index} value={String(index)}>
+                        {month}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={String(selectedYear)}
+                  onValueChange={(value) => setSelectedYear(Number(value))}
+                >
+                  <SelectTrigger className="w-full sm:w-[120px]">
+                    <SelectValue placeholder="Pilih Tahun" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yearOptions.map((year) => (
+                      <SelectItem key={year} value={String(year)}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+            </CardContent>
+          </Card>
+
+          <IncomeExpenseChart transactions={filteredTransactions} />
           
           <div className="grid gap-6 md:grid-cols-2">
             <Card className="shadow-lg">
@@ -30,7 +106,7 @@ export function ReportsTab({ transactions }: ReportsTabProps) {
                 <CardDescription>Distribusi pengeluaran Anda berdasarkan kategori.</CardDescription>
               </CardHeader>
               <CardContent>
-                <SpendingBreakdownChart transactions={transactions} />
+                <SpendingBreakdownChart transactions={filteredTransactions} />
               </CardContent>
             </Card>
             <Card className="shadow-lg">
@@ -39,12 +115,12 @@ export function ReportsTab({ transactions }: ReportsTabProps) {
                 <CardDescription>Distribusi pemasukan Anda berdasarkan sumber.</CardDescription>
               </CardHeader>
               <CardContent>
-                <IncomeBreakdownChart transactions={transactions} />
+                <IncomeBreakdownChart transactions={filteredTransactions} />
               </CardContent>
             </Card>
           </div>
 
-          <AIAdvisor transactions={transactions} />
+          <AIAdvisor transactions={filteredTransactions} />
         </div>
       </TabsContent>
       <TabsContent value="history">
