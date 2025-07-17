@@ -1,15 +1,4 @@
-export type TransactionCategory =
-  | 'Makanan & Minuman'
-  | 'Transportasi'
-  | 'Belanja'
-  | 'Hiburan'
-  | 'Kesehatan'
-  | 'Gaji'
-  | 'Tagihan'
-  | 'Tempat Tinggal'
-  | 'Pekerjaan Lepas'
-  | 'Investasi'
-  | 'Lainnya';
+export type TransactionCategory = string; // Now a generic string
 
 export type Transaction = {
   id: string;
@@ -19,9 +8,11 @@ export type Transaction = {
   amount: number;
   type: 'income' | 'expense';
   userId?: string;
+  createdAt?: string;
 };
 
-export const categories: TransactionCategory[] = [
+// These are now default categories for new users or users who haven't customized them.
+export const defaultExpenseCategories: TransactionCategory[] = [
   'Makanan & Minuman',
   'Transportasi',
   'Belanja',
@@ -32,12 +23,17 @@ export const categories: TransactionCategory[] = [
   'Lainnya',
 ];
 
-export const incomeCategories: TransactionCategory[] = [
+export const defaultIncomeCategories: TransactionCategory[] = [
   'Gaji',
   'Pekerjaan Lepas',
   'Investasi',
   'Lainnya',
 ];
+
+// Deprecated, use dynamic categories from Firestore
+export const categories = defaultExpenseCategories;
+export const incomeCategories = defaultIncomeCategories;
+
 
 export const categoryIcons: Record<string, string> = {
   'Makanan & Minuman': 'UtensilsCrossed',

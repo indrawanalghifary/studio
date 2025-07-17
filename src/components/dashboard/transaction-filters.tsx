@@ -29,6 +29,7 @@ interface TransactionFiltersProps {
   onCategoryChange: (category: string | undefined) => void;
   onReset: () => void;
   categories: string[];
+  isLoading: boolean;
 }
 
 export function TransactionFilters({
@@ -38,6 +39,7 @@ export function TransactionFilters({
   onCategoryChange,
   onReset,
   categories,
+  isLoading,
 }: TransactionFiltersProps) {
   const isFiltered = dateRange?.from || dateRange?.to || category;
   return (
@@ -83,9 +85,10 @@ export function TransactionFilters({
         <Select
             value={category}
             onValueChange={(value) => onCategoryChange(value === 'all' ? undefined : value)}
+            disabled={isLoading}
         >
           <SelectTrigger className="w-full md:w-[240px]">
-            <SelectValue placeholder="Pilih Kategori" />
+            <SelectValue placeholder={isLoading ? "Memuat..." : "Pilih Kategori"} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Semua Kategori</SelectItem>

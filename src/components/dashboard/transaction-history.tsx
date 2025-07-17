@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { categoryIcons, type Transaction, categories, incomeCategories } from "@/lib/data";
+import { categoryIcons, type Transaction } from "@/lib/data";
 import { Icon } from "lucide-react";
 import * as icons from "lucide-react";
 import { id } from 'date-fns/locale';
@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Badge } from "../ui/badge";
 import type { DateRange } from "react-day-picker";
 import { TransactionFilters } from "./transaction-filters";
+import { useCategories } from "@/hooks/use-categories";
 
 type IconName = keyof typeof icons;
 
@@ -26,11 +27,15 @@ interface TransactionHistoryProps {
   transactions: Transaction[];
 }
 
-const allCategories = [...categories, ...incomeCategories].filter((value, index, self) => self.indexOf(value) === index);
-
 export function TransactionHistory({ transactions }: TransactionHistoryProps) {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [category, setCategory] = useState<string | undefined>(undefined);
+  const { categories: userCategories, loading: loadingCategories } = useCategories();
+
+  const allCategories = useMemo(() => {
+    const combined = [...userCategories.expense, ...userCategories.income];
+    return [...new Set(combined)]; // Remove duplicates
+  }, [userCategories]);
   
   const filteredTransactions = useMemo(() => {
     return transactions.filter(transaction => {
@@ -67,6 +72,7 @@ export function TransactionHistory({ transactions }: TransactionHistoryProps) {
             onCategoryChange={setCategory}
             onReset={handleResetFilters}
             categories={allCategories}
+            isLoading={loadingCategories}
          />
          <ScrollArea className="h-[550px] mt-4">
             <Table>

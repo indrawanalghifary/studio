@@ -11,18 +11,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useState } from "react";
 import { ProfileSettingsDialog } from "./profile-settings-dialog";
+import { CategorySettingsDialog } from "./category-settings-dialog";
+
 
 export function UserNav() {
   const router = useRouter();
   const [user] = useAuthState(auth);
   const [isProfileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [isCategoryDialogOpen, setCategoryDialogOpen] = useState(false);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -59,6 +62,10 @@ export function UserNav() {
               <User className="mr-2 h-4 w-4" />
               <span>Profil</span>
             </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setCategoryDialogOpen(true)}>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Pengaturan Kategori</span>
+            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout}>
@@ -70,6 +77,10 @@ export function UserNav() {
       <ProfileSettingsDialog 
         isOpen={isProfileDialogOpen} 
         onOpenChange={setProfileDialogOpen}
+      />
+      <CategorySettingsDialog
+        isOpen={isCategoryDialogOpen}
+        onOpenChange={setCategoryDialogOpen}
       />
     </>
   );

@@ -17,9 +17,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { categories, incomeCategories, type Transaction } from "@/lib/data";
 import { addTransaction } from "@/lib/firestore";
 import type { ExtractTransactionFromReceiptOutput } from "@/ai/flows/extract-transaction-from-receipt";
+import { useCategories } from "@/hooks/use-categories";
 
 const formSchema = z.object({
   type: z.enum(["income", "expense"]),
@@ -39,7 +39,10 @@ interface AddTransactionFormProps {
 export function AddTransactionForm({ transactionType, onFormSubmit }: AddTransactionFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const { categories: userCategories, loading: loadingCategories } = useCategories();
   
+  const currentCategoryList = transactionType === 'expense' ? userCategories.expense : userCategories.income;
+
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -72,7 +75,7 @@ export function AddTransactionForm({ transactionType, onFormSubmit }: AddTransac
         form.setValue('date', new Date(result.date));
         form.setValue('type', result.type);
         
-        const availableCategories = result.type === 'expense' ? categories : incomeCategories;
+        const availableCategories = result.type === 'expense' ? userCategories.expense : userCategories.income;
         if (availableCategories.includes(result.category)) {
             form.setValue('category', result.category);
         } else {
@@ -91,13 +94,13 @@ export function AddTransactionForm({ transactionType, onFormSubmit }: AddTransac
     return () => {
         window.removeEventListener('scanComplete', handleScanComplete);
     };
-  }, [form, toast, transactionType]);
+  }, [form, toast, transactionType, userCategories]);
   
   async function onSubmit(values: FormSchemaType) {
     setIsLoading(true);
     try {
       const newTransaction = { ...values, createdAt: new Date() };
-      await addTransaction(newTransaction);
+      await addTransaction(newTransaction as any); // TODO: Fix type
       toast({
         title: "Transaksi ditambahkan",
         description: `Berhasil menambahkan ${values.type === 'income' ? 'pemasukan' : 'pengeluaran'}.`,
@@ -140,14 +143,14 @@ export function AddTransactionForm({ transactionType, onFormSubmit }: AddTransac
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Kategori</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select onValueChange={field.onChange} value={field.value} disabled={loadingCategories}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Pilih kategori" />
+                      <SelectValue placeholder={loadingCategories ? "Memuat kategori..." : "Pilih kategori"} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {(transactionType === 'expense' ? categories : incomeCategories).map((cat) => (
+                    {currentCategoryList.map((cat) => (
                       <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                     ))}
                   </SelectContent>
@@ -209,7 +212,7 @@ export function AddTransactionForm({ transactionType, onFormSubmit }: AddTransac
           )}
         />
         
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type="submit" className="w-full" disabled={isLoading || loadingCategories}>
           {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRightLeft className="mr-2 h-4 w-4" />}
           Simpan Transaksi
         </Button>

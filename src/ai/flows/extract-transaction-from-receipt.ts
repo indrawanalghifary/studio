@@ -10,7 +10,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
-import { categories, incomeCategories } from '@/lib/data';
+import { defaultExpenseCategories, defaultIncomeCategories } from '@/lib/data';
 
 const ExtractTransactionFromReceiptInputSchema = z.object({
   photoDataUri: z
@@ -21,7 +21,7 @@ const ExtractTransactionFromReceiptInputSchema = z.object({
 });
 export type ExtractTransactionFromReceiptInput = z.infer<typeof ExtractTransactionFromReceiptInputSchema>;
 
-const allCategories = [...categories, ...incomeCategories].filter((value, index, self) => self.indexOf(value) === index);
+const allCategories = [...defaultExpenseCategories, ...defaultIncomeCategories].filter((value, index, self) => self.indexOf(value) === index);
 
 const ExtractTransactionFromReceiptOutputSchema = z.object({
     amount: z.number().describe('Jumlah total transaksi. Temukan grand total.'),
