@@ -14,48 +14,32 @@ const chartConfig = {
   amount: {
     label: "Jumlah",
   },
-  'Makanan & Minuman': {
-    label: 'Makanan & Minuman',
+  'Gaji': {
+    label: 'Gaji',
     color: 'hsl(var(--chart-1))',
   },
-  'Transportasi': {
-    label: 'Transportasi',
+  'Pekerjaan Lepas': {
+    label: 'Pekerjaan Lepas',
     color: 'hsl(var(--chart-2))',
   },
-  'Belanja': {
-    label: 'Belanja',
+  'Investasi': {
+    label: 'Investasi',
     color: 'hsl(var(--chart-3))',
   },
-  'Hiburan': {
-    label: 'Hiburan',
+  'Lainnya': {
+    label: 'Lainnya',
     color: 'hsl(var(--chart-4))',
   },
-  'Kesehatan': {
-    label: 'Kesehatan',
-    color: 'hsl(var(--chart-5))',
-  },
-   'Tagihan': {
-    label: 'Tagihan',
-    color: 'hsl(var(--chart-1))',
-    },
-    'Tempat Tinggal': {
-    label: 'Tempat Tinggal',
-    color: 'hsl(var(--chart-2))',
-    },
-    'Lainnya': {
-    label: 'Lainnya',
-    color: 'hsl(var(--chart-3))',
-    },
 }
 
-interface SpendingBreakdownChartProps {
+interface IncomeBreakdownChartProps {
   transactions: Transaction[];
 }
 
-export function SpendingBreakdownChart({ transactions }: SpendingBreakdownChartProps) {
+export function IncomeBreakdownChart({ transactions }: IncomeBreakdownChartProps) {
   const chartData = React.useMemo(() => {
-    const expenseData = transactions.filter(t => t.type === 'expense');
-    const categoryTotals = expenseData.reduce((acc, t) => {
+    const incomeData = transactions.filter(t => t.type === 'income');
+    const categoryTotals = incomeData.reduce((acc, t) => {
       if (!acc[t.category]) {
         acc[t.category] = 0;
       }
@@ -70,15 +54,15 @@ export function SpendingBreakdownChart({ transactions }: SpendingBreakdownChartP
     }));
   }, [transactions]);
 
-  const totalExpenses = React.useMemo(() => {
+  const totalIncome = React.useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.amount, 0)
   }, [chartData]);
   
   if (chartData.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-[300px]">
-        <p className="text-muted-foreground">Belum ada data pengeluaran.</p>
-        <p className="text-sm text-muted-foreground">Tambahkan pengeluaran untuk melihat rinciannya.</p>
+        <p className="text-muted-foreground">Belum ada data pemasukan.</p>
+        <p className="text-sm text-muted-foreground">Tambahkan pemasukan untuk melihat rinciannya.</p>
       </div>
     )
   }
@@ -115,14 +99,14 @@ export function SpendingBreakdownChart({ transactions }: SpendingBreakdownChartP
                       y={viewBox.cy}
                       className="fill-foreground text-3xl font-bold"
                     >
-                      {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(totalExpenses)}
+                      {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(totalIncome)}
                     </tspan>
                     <tspan
                       x={viewBox.cx}
                       y={(viewBox.cy || 0) + 24}
                       className="fill-muted-foreground"
                     >
-                      Total Pengeluaran
+                      Total Pemasukan
                     </tspan>
                   </text>
                 )
