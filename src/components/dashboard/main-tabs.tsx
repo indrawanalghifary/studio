@@ -7,11 +7,13 @@ import type { Transaction } from "@/lib/data";
 interface MainTabsProps {
   onTransactionAdded: (transaction: Omit<Transaction, 'id'>) => void;
   transactions: Transaction[];
+  activeTab: string;
+  setActiveTab: (value: string) => void;
 }
 
-export function MainTabs({ onTransactionAdded, transactions }: MainTabsProps) {
+export function MainTabs({ onTransactionAdded, transactions, activeTab, setActiveTab }: MainTabsProps) {
   return (
-    <Tabs defaultValue="add_transaction">
+    <Tabs value={activeTab} onValueChange={setActiveTab}>
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="add_transaction">
           <PlusCircle className="mr-2 h-4 w-4" />

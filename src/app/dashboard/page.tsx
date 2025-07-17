@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
 import type { Transaction } from "@/lib/data";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { SummaryCards } from "@/components/dashboard/summary-cards";
@@ -11,12 +11,14 @@ import { MainTabs } from "@/components/dashboard/main-tabs";
 import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { ScanFab } from "@/components/dashboard/scan-fab";
 
 export default function DashboardPage() {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isDataLoading, setIsDataLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('add_transaction');
 
   useEffect(() => {
     if (!loading && !user) {
@@ -27,7 +29,11 @@ export default function DashboardPage() {
   useEffect(() => {
     if (user) {
       setIsDataLoading(true);
-      const q = query(collection(db, "transactions"), where("userId", "==", user.uid));
+      const q = query(
+        collection(db, "transactions"), 
+        where("userId", "==", user.uid)
+      );
+
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const userTransactions: Transaction[] = [];
         querySnapshot.forEach((doc) => {
@@ -38,7 +44,7 @@ export default function DashboardPage() {
             date: data.date.toDate ? data.date.toDate().toISOString() : data.date,
            } as Transaction);
         });
-        // Sort transactions by date client-side
+        
         userTransactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         setTransactions(userTransactions);
         setIsDataLoading(false);
@@ -78,11 +84,12 @@ export default function DashboardPage() {
         <SummaryCards transactions={transactions} />
         <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
           <div className="xl:col-span-2">
-            <MainTabs onTransactionAdded={handleTransactionAdded} transactions={transactions} />
+            <MainTabs onTransactionAdded={handleTransactionAdded} transactions={transactions} activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
           <RecentTransactions transactions={transactions} />
         </div>
       </main>
+      <ScanFab setActiveTab={setActiveTab} />
     </div>
   );
 }
