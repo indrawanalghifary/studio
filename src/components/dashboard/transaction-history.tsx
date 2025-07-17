@@ -1,8 +1,9 @@
 'use client';
 
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { categoryIcons, type Transaction } from "@/lib/data";
+import { categoryIcons, type Transaction, categories, incomeCategories } from "@/lib/data";
 import { Icon } from "lucide-react";
 import * as icons from "lucide-react";
 import { id } from 'date-fns/locale';
@@ -10,6 +11,8 @@ import { format } from 'date-fns';
 import { ScrollArea } from "../ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { Badge } from "../ui/badge";
+import type { DateRange } from "react-day-picker";
+import { TransactionFilters } from "./transaction-filters";
 
 type IconName = keyof typeof icons;
 
@@ -23,7 +26,28 @@ interface TransactionHistoryProps {
   transactions: Transaction[];
 }
 
+const allCategories = [...categories, ...incomeCategories].filter((value, index, self) => self.indexOf(value) === index);
+
 export function TransactionHistory({ transactions }: TransactionHistoryProps) {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [category, setCategory] = useState<string | undefined>(undefined);
+  
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter(transaction => {
+      const transactionDate = new Date(transaction.date);
+      const isDateInRange = !dateRange || (
+        (!dateRange.from || transactionDate >= dateRange.from) &&
+        (!dateRange.to || transactionDate <= dateRange.to)
+      );
+      const isCategoryMatch = !category || transaction.category === category;
+      return isDateInRange && isCategoryMatch;
+    });
+  }, [transactions, dateRange, category]);
+
+  const handleResetFilters = () => {
+    setDateRange(undefined);
+    setCategory(undefined);
+  };
   
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
@@ -36,9 +60,17 @@ export function TransactionHistory({ transactions }: TransactionHistoryProps) {
         <CardDescription>Seluruh catatan pemasukan dan pengeluaran Anda.</CardDescription>
       </CardHeader>
       <CardContent>
-         <ScrollArea className="h-[600px]">
+         <TransactionFilters
+            dateRange={dateRange}
+            onDateChange={setDateRange}
+            category={category}
+            onCategoryChange={setCategory}
+            onReset={handleResetFilters}
+            categories={allCategories}
+         />
+         <ScrollArea className="h-[550px] mt-4">
             <Table>
-                <TableHeader className="sticky top-0 bg-background">
+                <TableHeader className="sticky top-0 bg-background z-10">
                     <TableRow>
                         <TableHead>Deskripsi</TableHead>
                         <TableHead className="text-center">Kategori</TableHead>
@@ -47,14 +79,14 @@ export function TransactionHistory({ transactions }: TransactionHistoryProps) {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                     {transactions.length === 0 && (
+                     {filteredTransactions.length === 0 && (
                         <TableRow>
                             <TableCell colSpan={4} className="h-24 text-center">
-                                Belum ada transaksi.
+                                Tidak ada transaksi yang cocok dengan filter Anda.
                             </TableCell>
                         </TableRow>
                      )}
-                     {transactions.map((transaction) => (
+                     {filteredTransactions.map((transaction) => (
                         <TableRow key={transaction.id}>
                             <TableCell>
                                 <div className="flex items-center gap-3">
