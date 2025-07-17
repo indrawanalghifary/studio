@@ -1,8 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SpendingBreakdownChart } from "./spending-breakdown-chart";
 import { AIAdvisor } from "./ai-advisor";
+import { Transaction } from "@/lib/data";
 
-export function ReportsTab() {
+interface ReportsTabProps {
+  transactions: Transaction[];
+}
+
+export function ReportsTab({ transactions }: ReportsTabProps) {
   return (
     <div className="space-y-6">
       <Card className="shadow-lg">
@@ -11,10 +16,10 @@ export function ReportsTab() {
           <CardDescription>This chart shows your expenses by category for this month.</CardDescription>
         </CardHeader>
         <CardContent>
-          <SpendingBreakdownChart />
+          <SpendingBreakdownChart transactions={transactions} />
         </CardContent>
       </Card>
-      <AIAdvisor />
+      <AIAdvisor transactions={transactions} />
     </div>
   );
 }

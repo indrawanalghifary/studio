@@ -1,21 +1,25 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockTransactions } from "@/lib/data";
-import { ArrowDownLeft, ArrowUpRight, DollarSign, Wallet } from "lucide-react";
+import type { Transaction } from "@/lib/data";
+import { ArrowDownLeft, ArrowUpRight, Wallet } from "lucide-react";
 import { useMemo } from "react";
 
-export function SummaryCards() {
+interface SummaryCardsProps {
+  transactions: Transaction[];
+}
+
+export function SummaryCards({ transactions }: SummaryCardsProps) {
   const { income, expenses, balance } = useMemo(() => {
-    const income = mockTransactions
+    const income = transactions
       .filter((t) => t.type === 'income')
       .reduce((acc, t) => acc + t.amount, 0);
-    const expenses = mockTransactions
+    const expenses = transactions
       .filter((t) => t.type === 'expense')
       .reduce((acc, t) => acc + t.amount, 0);
     const balance = income - expenses;
     return { income, expenses, balance };
-  }, []);
+  }, [transactions]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);

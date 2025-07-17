@@ -2,9 +2,10 @@ export type Transaction = {
   id: string;
   date: string;
   description: string;
-  category: 'Food & Drinks' | 'Transport' | 'Shopping' | 'Entertainment' | 'Health' | 'Salary' | 'Utilities' | 'Housing' | 'Other';
+  category: 'Food & Drinks' | 'Transport' | 'Shopping' | 'Entertainment' | 'Health' | 'Salary' | 'Utilities' | 'Housing' | 'Freelance' | 'Investment' | 'Other';
   amount: number;
   type: 'income' | 'expense';
+  userId?: string;
 };
 
 export const mockTransactions: Transaction[] = [
@@ -23,13 +24,15 @@ export const mockTransactions: Transaction[] = [
 export const categories = ['Food & Drinks', 'Transport', 'Shopping', 'Entertainment', 'Health', 'Utilities', 'Housing', 'Other'];
 export const incomeCategories = ['Salary', 'Freelance', 'Investment', 'Other'];
 
-export const categoryIcons: Record<Transaction['category'], string> = {
+export const categoryIcons: Record<string, string> = {
   'Food & Drinks': 'utensils-crossed',
   'Transport': 'bus',
   'Shopping': 'shopping-bag',
   'Entertainment': 'popcorn',
   'Health': 'heart-pulse',
   'Salary': 'landmark',
+  'Freelance': 'briefcase',
+  'Investment': 'trending-up',
   'Utilities': 'lightbulb',
   'Housing': 'home',
   'Other': 'shapes'

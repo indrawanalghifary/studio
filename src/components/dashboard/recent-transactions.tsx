@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { mockTransactions, categoryIcons } from "@/lib/data";
+import { categoryIcons, type Transaction } from "@/lib/data";
 import { Icon } from "lucide-react";
 import * as icons from "lucide-react";
 
@@ -14,8 +14,12 @@ function DynamicIcon({ name }: { name: string }) {
     return <LucideIcon className="h-5 w-5" />;
 }
 
-export function RecentTransactions() {
-  const recent = mockTransactions.slice(0, 5);
+interface RecentTransactionsProps {
+  transactions: Transaction[];
+}
+
+export function RecentTransactions({ transactions }: RecentTransactionsProps) {
+  const recent = transactions.slice(0, 5);
   
   const formatCurrency = (amount: number, type: 'income' | 'expense') => {
     const value = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
@@ -29,6 +33,7 @@ export function RecentTransactions() {
         <CardDescription>A quick look at your latest financial moves.</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
+        {recent.length === 0 && <p className="text-sm text-muted-foreground">No transactions yet.</p>}
         {recent.map((transaction) => (
           <div key={transaction.id} className="flex items-center gap-4">
             <Avatar className="hidden h-10 w-10 sm:flex bg-primary/10 text-primary">

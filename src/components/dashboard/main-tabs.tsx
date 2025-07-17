@@ -2,8 +2,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AddTransactionForm } from "./add-transaction-form";
 import { ReportsTab } from "./reports-tab";
 import { PlusCircle, LineChart } from "lucide-react";
+import type { Transaction } from "@/lib/data";
 
-export function MainTabs() {
+interface MainTabsProps {
+  onTransactionAdded: (transaction: Omit<Transaction, 'id'>) => void;
+  transactions: Transaction[];
+}
+
+export function MainTabs({ onTransactionAdded, transactions }: MainTabsProps) {
   return (
     <Tabs defaultValue="add_transaction">
       <TabsList className="grid w-full grid-cols-2">
@@ -17,10 +23,10 @@ export function MainTabs() {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="add_transaction">
-        <AddTransactionForm />
+        <AddTransactionForm onTransactionAdded={onTransactionAdded} />
       </TabsContent>
       <TabsContent value="reports">
-        <ReportsTab />
+        <ReportsTab transactions={transactions} />
       </TabsContent>
     </Tabs>
   );

@@ -18,17 +18,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { categories, incomeCategories } from "@/lib/data";
+import { categories, incomeCategories, type Transaction } from "@/lib/data";
+import { addTransaction } from "@/lib/firestore";
 
 const formSchema = z.object({
   type: z.enum(["income", "expense"]),
   amount: z.coerce.number().positive({ message: "Amount must be positive." }),
   category: z.string().min(1, { message: "Please select a category." }),
   date: z.date(),
-  description: z.string().optional(),
+  description: z.string().min(1, { message: "Description is required." }),
 });
 
-export function AddTransactionForm() {
+interface AddTransactionFormProps {
+  onTransactionAdded: (transaction: Omit<Transaction, 'id'>) => void;
+}
+
+export function AddTransactionForm({ onTransactionAdded }: AddTransactionFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [transactionType, setTransactionType] = useState<'income' | 'expense'>('expense');
@@ -40,22 +45,37 @@ export function AddTransactionForm() {
       amount: 0,
       category: '',
       date: new Date(),
+      description: '',
     },
   });
   
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    console.log(values);
-    setTimeout(() => {
+    try {
+      await addTransaction(values);
       toast({
         title: "Transaction added",
         description: `Successfully added ${values.type} of ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(values.amount)}.`,
         variant: "default",
         className: "bg-accent text-accent-foreground"
       });
-      form.reset({ ...form.getValues(), amount: 0, description: '', category: '' });
+      onTransactionAdded(values);
+      form.reset({ 
+          type: transactionType,
+          amount: 0,
+          category: '',
+          date: new Date(),
+          description: '',
+       });
+    } catch (error) {
+       toast({
+        title: "Error",
+        description: "Failed to add transaction. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   }
 
   return (
@@ -177,7 +197,7 @@ export function AddTransactionForm() {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description (Optional)</FormLabel>
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea placeholder="e.g., Coffee with a friend" {...field} />
                   </FormControl>

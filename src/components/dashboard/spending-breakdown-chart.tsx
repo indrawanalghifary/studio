@@ -1,21 +1,14 @@
 'use client'
 
 import * as React from "react"
-import { Label, Pie, PieChart, Sector } from "recharts"
+import { Label, Pie, PieChart } from "recharts"
+import type { Transaction } from "@/lib/data";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { mockTransactions } from "@/lib/data"
 
 const chartConfig = {
   amount: {
@@ -55,9 +48,13 @@ const chartConfig = {
     },
 }
 
-export function SpendingBreakdownChart() {
+interface SpendingBreakdownChartProps {
+  transactions: Transaction[];
+}
+
+export function SpendingBreakdownChart({ transactions }: SpendingBreakdownChartProps) {
   const chartData = React.useMemo(() => {
-    const expenseData = mockTransactions.filter(t => t.type === 'expense');
+    const expenseData = transactions.filter(t => t.type === 'expense');
     const categoryTotals = expenseData.reduce((acc, t) => {
       if (!acc[t.category]) {
         acc[t.category] = 0;
@@ -71,12 +68,21 @@ export function SpendingBreakdownChart() {
       amount,
       fill: chartConfig[category as keyof typeof chartConfig]?.color || 'hsl(var(--chart-5))',
     }));
-  }, []);
+  }, [transactions]);
 
   const totalExpenses = React.useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.amount, 0)
   }, [chartData]);
   
+  if (chartData.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[300px]">
+        <p className="text-muted-foreground">No expense data for this month yet.</p>
+        <p className="text-sm text-muted-foreground">Add some expenses to see your breakdown.</p>
+      </div>
+    )
+  }
+
   return (
     <ChartContainer
       config={chartConfig}
