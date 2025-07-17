@@ -17,11 +17,11 @@ export function MainTabs({ onTransactionAdded, transactions, activeTab, setActiv
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="add_transaction">
           <PlusCircle className="mr-2 h-4 w-4" />
-          Add Transaction
+          Tambah Transaksi
         </TabsTrigger>
         <TabsTrigger value="reports">
           <LineChart className="mr-2 h-4 w-4" />
-          Reports & AI
+          Laporan & AI
         </TabsTrigger>
       </TabsList>
       <TabsContent value="add_transaction">

@@ -9,7 +9,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 import { categories, incomeCategories } from '@/lib/data';
 
 const ExtractTransactionFromReceiptInputSchema = z.object({
@@ -21,12 +21,14 @@ const ExtractTransactionFromReceiptInputSchema = z.object({
 });
 export type ExtractTransactionFromReceiptInput = z.infer<typeof ExtractTransactionFromReceiptInputSchema>;
 
+const allCategories = [...categories, ...incomeCategories].filter((value, index, self) => self.indexOf(value) === index);
+
 const ExtractTransactionFromReceiptOutputSchema = z.object({
-    amount: z.number().describe('The total amount of the transaction. Find the grand total.'),
-    category: z.string().describe(`The category of the transaction. Choose from the following list: ${[...categories, ...incomeCategories].join(', ')}`),
-    date: z.string().describe('The date of the transaction in YYYY-MM-DD format.'),
-    description: z.string().describe('A short description of the transaction, usually the name of the store or merchant.'),
-    type: z.enum(['income', 'expense']).describe('The type of transaction. Most receipts are expenses.'),
+    amount: z.number().describe('Jumlah total transaksi. Temukan grand total.'),
+    category: z.string().describe(`Kategori transaksi. Pilih dari daftar berikut: ${allCategories.join(', ')}`),
+    date: z.string().describe('Tanggal transaksi dalam format YYYY-MM-DD.'),
+    description: z.string().describe('Deskripsi singkat transaksi, biasanya nama toko atau merchant.'),
+    type: z.enum(['income', 'expense']).describe('Jenis transaksi. Sebagian besar struk adalah pengeluaran.'),
 });
 export type ExtractTransactionFromReceiptOutput = z.infer<typeof ExtractTransactionFromReceiptOutputSchema>;
 
@@ -38,17 +40,17 @@ const prompt = ai.definePrompt({
     name: 'extractTransactionFromReceiptPrompt',
     input: { schema: ExtractTransactionFromReceiptInputSchema },
     output: { schema: ExtractTransactionFromReceiptOutputSchema },
-    prompt: `You are an expert receipt scanner. Analyze the provided receipt image and extract the transaction details.
+    prompt: `Anda adalah pemindai struk ahli. Analisis gambar struk yang diberikan dan ekstrak detail transaksinya.
 
-- Identify the merchant name and use it as the description.
-- Find the final total amount of the transaction.
-- Determine the date of the transaction.
-- Categorize the transaction based on the items or merchant name. The transaction is most likely an 'expense'.
-- Based on the content, determine if it is an 'income' or 'expense' transaction.
+- Identifikasi nama merchant dan gunakan sebagai deskripsi.
+- Temukan jumlah total akhir dari transaksi.
+- Tentukan tanggal transaksi.
+- Kategorikan transaksi berdasarkan item atau nama merchant. Transaksi kemungkinan besar adalah 'pengeluaran'.
+- Berdasarkan konten, tentukan apakah ini transaksi 'pemasukan' atau 'pengeluaran'.
 
-Return the data in the specified JSON format.
+Kembalikan data dalam format JSON yang ditentukan.
 
-Receipt Image: {{media url=photoDataUri}}`,
+Gambar Struk: {{media url=photoDataUri}}`,
 });
 
 const extractTransactionFromReceiptFlow = ai.defineFlow(

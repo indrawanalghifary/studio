@@ -12,38 +12,38 @@ import {
 
 const chartConfig = {
   amount: {
-    label: "Amount",
+    label: "Jumlah",
   },
-  'Food & Drinks': {
-    label: 'Food & Drinks',
+  'Makanan & Minuman': {
+    label: 'Makanan & Minuman',
     color: 'hsl(var(--chart-1))',
   },
-  'Transport': {
-    label: 'Transport',
+  'Transportasi': {
+    label: 'Transportasi',
     color: 'hsl(var(--chart-2))',
   },
-  'Shopping': {
-    label: 'Shopping',
+  'Belanja': {
+    label: 'Belanja',
     color: 'hsl(var(--chart-3))',
   },
-  'Entertainment': {
-    label: 'Entertainment',
+  'Hiburan': {
+    label: 'Hiburan',
     color: 'hsl(var(--chart-4))',
   },
-  'Health': {
-    label: 'Health',
+  'Kesehatan': {
+    label: 'Kesehatan',
     color: 'hsl(var(--chart-5))',
   },
-   'Utilities': {
-    label: 'Utilities',
+   'Tagihan': {
+    label: 'Tagihan',
     color: 'hsl(var(--chart-1))',
     },
-    'Housing': {
-    label: 'Housing',
+    'Tempat Tinggal': {
+    label: 'Tempat Tinggal',
     color: 'hsl(var(--chart-2))',
     },
-    'Other': {
-    label: 'Other',
+    'Lainnya': {
+    label: 'Lainnya',
     color: 'hsl(var(--chart-3))',
     },
 }
@@ -77,8 +77,8 @@ export function SpendingBreakdownChart({ transactions }: SpendingBreakdownChartP
   if (chartData.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-[300px]">
-        <p className="text-muted-foreground">No expense data for this month yet.</p>
-        <p className="text-sm text-muted-foreground">Add some expenses to see your breakdown.</p>
+        <p className="text-muted-foreground">Belum ada data pengeluaran untuk bulan ini.</p>
+        <p className="text-sm text-muted-foreground">Tambahkan pengeluaran untuk melihat rinciannya.</p>
       </div>
     )
   }
@@ -91,7 +91,7 @@ export function SpendingBreakdownChart({ transactions }: SpendingBreakdownChartP
       <PieChart>
         <ChartTooltip
           cursor={false}
-          content={<ChartTooltipContent hideLabel />}
+          content={<ChartTooltipContent hideLabel formatter={(value) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value as number)} />}
         />
         <Pie
           data={chartData}
@@ -115,14 +115,14 @@ export function SpendingBreakdownChart({ transactions }: SpendingBreakdownChartP
                       y={viewBox.cy}
                       className="fill-foreground text-3xl font-bold"
                     >
-                      {totalExpenses.toLocaleString("en-US", { style: "currency", currency: "USD"})}
+                      {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(totalExpenses)}
                     </tspan>
                     <tspan
                       x={viewBox.cx}
                       y={(viewBox.cy || 0) + 24}
                       className="fill-muted-foreground"
                     >
-                      Total Expenses
+                      Total Pengeluaran
                     </tspan>
                   </text>
                 )

@@ -15,17 +15,17 @@ export default function LoginPage() {
           <div className="mx-auto mb-4">
             <Logo />
           </div>
-          <CardTitle className="text-2xl font-bold">Welcome Back!</CardTitle>
-          <CardDescription>Enter your email below to login to your account</CardDescription>
+          <CardTitle className="text-2xl font-bold">Selamat Datang Kembali!</CardTitle>
+          <CardDescription>Masukkan email Anda untuk masuk ke akun Anda</CardDescription>
         </CardHeader>
         <CardContent>
           <LoginForm />
         </CardContent>
         <CardFooter className="flex-col">
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            Don&apos;t have an account?{' '}
+            Belum punya akun?{' '}
             <Link href="/signup" className="font-semibold text-primary underline-offset-4 hover:underline">
-              Sign up
+              Daftar
             </Link>
           </p>
         </CardFooter>

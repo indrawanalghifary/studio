@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
+import { id } from "date-fns/locale";
 import { Calendar as CalendarIcon, Loader2, Upload, ArrowRightLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -24,10 +25,10 @@ import type { ExtractTransactionFromReceiptOutput } from "@/ai/flows/extract-tra
 
 const formSchema = z.object({
   type: z.enum(["income", "expense"]),
-  amount: z.coerce.number().positive({ message: "Amount must be positive." }),
-  category: z.string().min(1, { message: "Please select a category." }),
+  amount: z.coerce.number().positive({ message: "Jumlah harus positif." }),
+  category: z.string().min(1, { message: "Silakan pilih kategori." }),
   date: z.date(),
-  description: z.string().min(1, { message: "Description is required." }),
+  description: z.string().min(1, { message: "Deskripsi wajib diisi." }),
 });
 
 interface AddTransactionFormProps {
@@ -69,12 +70,12 @@ export function AddTransactionForm({ onTransactionAdded }: AddTransactionFormPro
         if (availableCategories.includes(result.category)) {
             form.setValue('category', result.category);
         } else {
-            form.setValue('category', 'Other');
+            form.setValue('category', 'Lainnya');
         }
 
         toast({
-            title: "Scan Complete",
-            description: "Form has been pre-filled with the receipt data.",
+            title: "Pindai Selesai",
+            description: "Formulir telah diisi dengan data dari struk.",
             variant: 'default',
             className: "bg-accent text-accent-foreground"
         });
@@ -93,8 +94,8 @@ export function AddTransactionForm({ onTransactionAdded }: AddTransactionFormPro
       const newTransaction = { ...values, createdAt: new Date() };
       await addTransaction(newTransaction);
       toast({
-        title: "Transaction added",
-        description: `Successfully added ${values.type} of ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(values.amount)}.`,
+        title: "Transaksi ditambahkan",
+        description: `Berhasil menambahkan ${values.type === 'income' ? 'pemasukan' : 'pengeluaran'} sebesar ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(values.amount)}.`,
         variant: "default",
         className: "bg-accent text-accent-foreground"
       });
@@ -108,7 +109,7 @@ export function AddTransactionForm({ onTransactionAdded }: AddTransactionFormPro
     } catch (error) {
        toast({
         title: "Error",
-        description: "Failed to add transaction. Please try again.",
+        description: "Gagal menambahkan transaksi. Silakan coba lagi.",
         variant: "destructive",
       });
     } finally {
@@ -119,8 +120,8 @@ export function AddTransactionForm({ onTransactionAdded }: AddTransactionFormPro
   return (
     <Card className="shadow-lg">
       <CardHeader>
-        <CardTitle>Record a New Transaction</CardTitle>
-        <CardDescription>Fill in the details below to add a new financial record.</CardDescription>
+        <CardTitle>Catat Transaksi Baru</CardTitle>
+        <CardDescription>Isi detail di bawah ini untuk menambahkan catatan keuangan baru.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -144,10 +145,10 @@ export function AddTransactionForm({ onTransactionAdded }: AddTransactionFormPro
                       }}
                     >
                       <ToggleGroupItem value="expense" aria-label="Toggle expense" className="data-[state=on]:bg-red-100 data-[state=on]:text-red-600">
-                        Expense
+                        Pengeluaran
                       </ToggleGroupItem>
                       <ToggleGroupItem value="income" aria-label="Toggle income" className="data-[state=on]:bg-green-100 data-[state=on]:text-green-600">
-                        Income
+                        Pemasukan
                       </ToggleGroupItem>
                     </ToggleGroup>
                   </FormControl>
@@ -162,7 +163,7 @@ export function AddTransactionForm({ onTransactionAdded }: AddTransactionFormPro
                 name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Amount</FormLabel>
+                    <FormLabel>Jumlah</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="0.00" {...field} />
                     </FormControl>
@@ -175,11 +176,11 @@ export function AddTransactionForm({ onTransactionAdded }: AddTransactionFormPro
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
+                    <FormLabel>Kategori</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a category" />
+                          <SelectValue placeholder="Pilih kategori" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -199,7 +200,7 @@ export function AddTransactionForm({ onTransactionAdded }: AddTransactionFormPro
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Transaction Date</FormLabel>
+                  <FormLabel>Tanggal Transaksi</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -210,13 +211,14 @@ export function AddTransactionForm({ onTransactionAdded }: AddTransactionFormPro
                             !field.value && "text-muted-foreground"
                           )}
                         >
-                          {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                          {field.value ? format(field.value, "PPP", { locale: id }) : <span>Pilih tanggal</span>}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
+                        locale={id}
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
@@ -235,24 +237,18 @@ export function AddTransactionForm({ onTransactionAdded }: AddTransactionFormPro
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Deskripsi</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="e.g., Coffee with a friend" {...field} />
+                    <Textarea placeholder="cth: Kopi dengan teman" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            <div className="flex flex-col gap-4 sm:flex-row">
-                <Button type="button" variant="outline" className="w-full" disabled>
-                    <Upload className="mr-2 h-4 w-4" /> Upload File
-                </Button>
-            </div>
             
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRightLeft className="mr-2 h-4 w-4" />}
-              Add Transaction
+              Tambah Transaksi
             </Button>
           </form>
         </Form>

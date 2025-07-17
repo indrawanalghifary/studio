@@ -16,8 +16,8 @@ import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email.' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+  email: z.string().email({ message: 'Silakan masukkan email yang valid.' }),
+  password: z.string().min(6, { message: 'Kata sandi minimal harus 6 karakter.' }),
 });
 
 export function LoginForm() {
@@ -38,15 +38,15 @@ export function LoginForm() {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({
-        title: 'Login Successful',
-        description: 'Welcome back!',
+        title: 'Login Berhasil',
+        description: 'Selamat datang kembali!',
       });
       router.push('/dashboard');
     } catch (error: any) {
       console.error("Authentication error:", error);
       toast({
-        title: 'Login Failed',
-        description: error.message || 'An unexpected error occurred.',
+        title: 'Login Gagal',
+        description: error.message || 'Terjadi kesalahan yang tidak terduga.',
         variant: 'destructive',
       });
     } finally {
@@ -64,7 +64,7 @@ export function LoginForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="name@example.com" {...field} />
+                <Input placeholder="nama@contoh.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -75,7 +75,7 @@ export function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Kata Sandi</FormLabel>
               <FormControl>
                 <Input type="password" placeholder="••••••••" {...field} />
               </FormControl>
@@ -85,7 +85,7 @@ export function LoginForm() {
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Login
+          Masuk
         </Button>
       </form>
     </Form>

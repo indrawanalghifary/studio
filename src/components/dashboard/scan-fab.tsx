@@ -34,8 +34,8 @@ export function ScanFab({ setActiveTab }: ScanFabProps) {
           setHasCameraPermission(false);
           toast({
             variant: 'destructive',
-            title: 'Camera Access Denied',
-            description: 'Please enable camera permissions in your browser settings to use this feature.',
+            title: 'Akses Kamera Ditolak',
+            description: 'Mohon izinkan akses kamera di pengaturan browser Anda untuk menggunakan fitur ini.',
           });
         }
       };
@@ -66,19 +66,17 @@ export function ScanFab({ setActiveTab }: ScanFabProps) {
     try {
       const result = await extractTransactionFromReceipt({ photoDataUri });
       
-      // Dispatch custom event with the scanned data
       const event = new CustomEvent<ExtractTransactionFromReceiptOutput>('scanComplete', { detail: result });
       window.dispatchEvent(event);
       
-      // Switch to the add transaction tab
       setActiveTab('add_transaction');
 
       setOpenScanDialog(false);
     } catch (error) {
       console.error("Error analyzing receipt:", error);
       toast({
-        title: "Scan Failed",
-        description: "Could not extract data from the receipt. Please try again.",
+        title: "Pindai Gagal",
+        description: "Tidak dapat mengekstrak data dari struk. Silakan coba lagi.",
         variant: "destructive",
       });
     } finally {
@@ -95,14 +93,14 @@ export function ScanFab({ setActiveTab }: ScanFabProps) {
             size="icon"
           >
             <Camera className="h-8 w-8" />
-            <span className="sr-only">Scan Receipt</span>
+            <span className="sr-only">Pindai Struk</span>
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Scan Receipt</DialogTitle>
+            <DialogTitle>Pindai Struk</DialogTitle>
             <DialogDescription>
-              Position your receipt within the frame and capture it.
+              Posisikan struk Anda di dalam bingkai dan ambil gambar.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -113,9 +111,9 @@ export function ScanFab({ setActiveTab }: ScanFabProps) {
                 <div className="absolute inset-0 flex items-center justify-center bg-black/80 rounded-md">
                   <Alert variant="destructive" className="w-auto">
                     <Video className="h-4 w-4" />
-                    <AlertTitle>Camera Access Required</AlertTitle>
+                    <AlertTitle>Akses Kamera Diperlukan</AlertTitle>
                     <AlertDescription>
-                      Please allow camera access to use this feature.
+                      Mohon izinkan akses kamera untuk menggunakan fitur ini.
                     </AlertDescription>
                   </Alert>
                 </div>
@@ -125,7 +123,7 @@ export function ScanFab({ setActiveTab }: ScanFabProps) {
           <DialogFooter>
             <Button type="button" onClick={handleCaptureAndAnalyze} disabled={!hasCameraPermission || isScanning} className="w-full">
               {isScanning ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Scan className="mr-2 h-4 w-4" />}
-              {isScanning ? "Analyzing..." : "Capture & Analyze"}
+              {isScanning ? "Menganalisis..." : "Ambil & Analisis"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -15,17 +15,17 @@ export default function SignupPage() {
           <div className="mx-auto mb-4">
             <Logo />
           </div>
-          <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
-          <CardDescription>Enter your email below to create your account</CardDescription>
+          <CardTitle className="text-2xl font-bold">Buat Akun</CardTitle>
+          <CardDescription>Masukkan email Anda untuk membuat akun</CardDescription>
         </CardHeader>
         <CardContent>
           <SignupForm />
         </CardContent>
         <CardFooter className="flex-col">
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            Already have an account?{' '}
+            Sudah punya akun?{' '}
             <Link href="/login" className="font-semibold text-primary underline-offset-4 hover:underline">
-              Login
+              Masuk
             </Link>
           </p>
         </CardFooter>

@@ -15,8 +15,8 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email.' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+  email: z.string().email({ message: 'Silakan masukkan email yang valid.' }),
+  password: z.string().min(6, { message: 'Kata sandi minimal harus 6 karakter.' }),
 });
 
 export function SignupForm() {
@@ -37,15 +37,15 @@ export function SignupForm() {
     try {
       await createUserWithEmailAndPassword(auth, values.email, values.password);
       toast({
-        title: 'Account Created',
-        description: "We've created your account for you.",
+        title: 'Akun Berhasil Dibuat',
+        description: "Kami telah membuat akun untuk Anda.",
       });
       router.push('/dashboard');
     } catch (error: any) {
       console.error("Signup error:", error);
        toast({
-        title: 'Signup Failed',
-        description: error.message || 'An unexpected error occurred.',
+        title: 'Pendaftaran Gagal',
+        description: error.message || 'Terjadi kesalahan yang tidak terduga.',
         variant: 'destructive',
       });
     } finally {
@@ -63,7 +63,7 @@ export function SignupForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="name@example.com" {...field} />
+                <Input placeholder="nama@contoh.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -74,7 +74,7 @@ export function SignupForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Kata Sandi</FormLabel>
               <FormControl>
                 <Input type="password" placeholder="••••••••" {...field} />
               </FormControl>
@@ -84,7 +84,7 @@ export function SignupForm() {
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Sign Up
+          Daftar
         </Button>
       </form>
     </Form>

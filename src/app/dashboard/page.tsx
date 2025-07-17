@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase";
-import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import type { Transaction } from "@/lib/data";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { SummaryCards } from "@/components/dashboard/summary-cards";
@@ -58,7 +58,6 @@ export default function DashboardPage() {
   }, [user]);
 
   const handleTransactionAdded = useCallback((newTransaction: Omit<Transaction, 'id' | 'createdAt'>) => {
-    // Optimistically update UI, though Firestore snapshot listener will handle the source of truth
     const fullTransaction: Transaction = {
       id: Math.random().toString(), // temporary ID
       ...newTransaction,
@@ -72,7 +71,7 @@ export default function DashboardPage() {
     return (
       <div className="flex min-h-screen w-full flex-col items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Loading your financial data...</p>
+        <p className="mt-4 text-muted-foreground">Memuat data keuangan Anda...</p>
       </div>
     );
   }

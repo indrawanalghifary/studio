@@ -12,8 +12,8 @@ export function ReportsTab({ transactions }: ReportsTabProps) {
     <div className="space-y-6">
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle>Spending Breakdown</CardTitle>
-          <CardDescription>This chart shows your expenses by category for this month.</CardDescription>
+          <CardTitle>Rincian Pengeluaran</CardTitle>
+          <CardDescription>Grafik ini menunjukkan pengeluaran Anda berdasarkan kategori untuk bulan ini.</CardDescription>
         </CardHeader>
         <CardContent>
           <SpendingBreakdownChart transactions={transactions} />

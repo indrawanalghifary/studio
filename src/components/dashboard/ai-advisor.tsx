@@ -21,8 +21,8 @@ export function AIAdvisor({ transactions }: AIAdvisorProps) {
   const handleGetAdvice = async () => {
     if (transactions.length === 0) {
       toast({
-        title: "Not Enough Data",
-        description: "Please add some transactions first to get financial advice.",
+        title: "Data Tidak Cukup",
+        description: "Silakan tambahkan beberapa transaksi terlebih dahulu untuk mendapatkan saran keuangan.",
         variant: "destructive"
       });
       return;
@@ -35,7 +35,7 @@ export function AIAdvisor({ transactions }: AIAdvisorProps) {
       const result = await getFinancialAdvice(transactions);
       setAdvice(result.insights);
     } catch (e) {
-      setError('Failed to get advice. Please try again.');
+      setError('Gagal mendapatkan saran. Silakan coba lagi.');
       console.error(e);
     } finally {
       setIsLoading(false);
@@ -47,28 +47,28 @@ export function AIAdvisor({ transactions }: AIAdvisorProps) {
       <CardHeader>
         <div className="flex items-center gap-2">
           <Lightbulb className="h-6 w-6 text-primary" />
-          <CardTitle>AI Financial Advisor</CardTitle>
+          <CardTitle>Penasihat Keuangan AI</CardTitle>
         </div>
-        <CardDescription>Get personalized insights and recommendations to improve your financial health.</CardDescription>
+        <CardDescription>Dapatkan wawasan dan rekomendasi yang dipersonalisasi untuk meningkatkan kesehatan keuangan Anda.</CardDescription>
       </CardHeader>
       <CardContent className="min-h-[100px]">
         {isLoading && (
           <div className="flex items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-2">Analyzing your spending...</p>
+            <p className="ml-2">Menganalisis pengeluaran Anda...</p>
           </div>
         )}
         {error && <p className="text-destructive">{error}</p>}
         {advice && <p className="text-sm text-foreground/80 whitespace-pre-wrap">{advice}</p>}
          {!advice && !isLoading && !error && (
             <div className="flex items-center justify-center h-full">
-                <p className="text-muted-foreground">Click the button below to generate insights.</p>
+                <p className="text-muted-foreground">Klik tombol di bawah untuk menghasilkan wawasan.</p>
             </div>
         )}
       </CardContent>
       <CardFooter>
         <Button onClick={handleGetAdvice} disabled={isLoading} className="w-full">
-          {isLoading ? 'Thinking...' : 'Generate My Financial Insights'}
+          {isLoading ? 'Berpikir...' : 'Hasilkan Wawasan Keuangan Saya'}
         </Button>
       </CardFooter>
     </Card>
