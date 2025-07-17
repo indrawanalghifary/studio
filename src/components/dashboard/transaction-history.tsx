@@ -15,6 +15,7 @@ import type { DateRange } from "react-day-picker";
 import { TransactionFilters } from "./transaction-filters";
 import { useCategories } from "@/hooks/use-categories";
 import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
 
 type IconName = keyof typeof icons;
 
@@ -55,6 +56,23 @@ export function TransactionHistory({ transactions }: TransactionHistoryProps) {
     setCurrentPage(1);
     return filtered;
   }, [transactions, dateRange, category]);
+  
+  const { totalIncome, totalExpenses, netTotal } = useMemo(() => {
+    const totals = filteredTransactions.reduce((acc, t) => {
+        if (t.type === 'income') {
+            acc.income += t.amount;
+        } else {
+            acc.expense += t.amount;
+        }
+        return acc;
+    }, { income: 0, expense: 0 });
+
+    return {
+        totalIncome: totals.income,
+        totalExpenses: totals.expense,
+        netTotal: totals.income - totals.expense,
+    };
+  }, [filteredTransactions]);
 
   const paginatedTransactions = useMemo(() => {
     const startIndex = (currentPage - 1) * TRANSACTIONS_PER_PAGE;
@@ -160,6 +178,24 @@ export function TransactionHistory({ transactions }: TransactionHistoryProps) {
                 </Button>
             </div>
         </div>
+        
+        <Separator className="my-4" />
+
+        <div className="flex flex-col sm:flex-row justify-end gap-4 sm:gap-8 text-right px-2">
+            <div>
+                <div className="text-sm text-muted-foreground">Total Pemasukan (Difilter)</div>
+                <div className="text-lg font-bold text-green-500">{formatCurrency(totalIncome)}</div>
+            </div>
+            <div>
+                <div className="text-sm text-muted-foreground">Total Pengeluaran (Difilter)</div>
+                <div className="text-lg font-bold text-red-500">{formatCurrency(totalExpenses)}</div>
+            </div>
+             <div>
+                <div className="text-sm text-muted-foreground">Total Bersih (Difilter)</div>
+                <div className={`text-lg font-bold ${netTotal >= 0 ? 'text-foreground' : 'text-destructive'}`}>{formatCurrency(netTotal)}</div>
+            </div>
+        </div>
+
       </CardContent>
     </Card>
   );

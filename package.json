@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "seed": "node scripts/seed.js"
+    "seed": "ts-node scripts/seed.js"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.14.1",

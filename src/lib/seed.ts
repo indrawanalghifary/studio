@@ -2,10 +2,12 @@
 // It's imported by `scripts/seed.js` which is the executable script.
 
 const { Timestamp } = require('firebase-admin/firestore');
+// Import Firestore as a type
+const { Firestore } = require('firebase-admin/firestore'); // This import is for the *value* of Firestore, not the type itself. We'll use 'typeof Firestore' for the type annotation.
 
-const dummyTransactions = (userId) => [
+const dummyTransactions = (userId: string) => [
   // Expenses
-  {
+ {
     amount: 50000,
     category: 'Makanan & Minuman',
     date: Timestamp.fromDate(new Date('2024-05-01')),
@@ -125,7 +127,7 @@ const dummyTransactions = (userId) => [
   },
 ];
 
-async function seedTransactions(db, userId) {
+async function seedTransactions(db: typeof Firestore, userId: string) {
   const transactionsCollection = db.collection('transactions');
   const transactions = dummyTransactions(userId);
 
