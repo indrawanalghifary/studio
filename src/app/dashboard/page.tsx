@@ -46,6 +46,7 @@ export default function DashboardPage() {
         });
         
         // Sort on the client side to avoid composite index requirement
+        // Newest transactions first
         userTransactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         setTransactions(userTransactions);
         setIsDataLoading(false);
