@@ -49,7 +49,7 @@ Here are the user's transactions:
   - Date: {{date}}, Description: {{description}}, Amount: {{amount}}, Type: {{type}}, Category: {{category}}
 {{/each}}
 
-Provide insights and recommendations in a clear and concise manner.
+Provide insights and recommendations in a clear and concise manner, in indonesian language.
 `,
 });
 

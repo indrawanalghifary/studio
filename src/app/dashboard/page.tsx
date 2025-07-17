@@ -1,24 +1,23 @@
 'use client';
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "@/lib/firebase";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import type { Transaction } from "@/lib/data";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { SummaryCards } from "@/components/dashboard/summary-cards";
-import { MainTabs } from "@/components/dashboard/main-tabs";
-import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { ScanFab } from "@/components/dashboard/scan-fab";
+import { TransactionFab } from "@/components/dashboard/transaction-fab";
+import { ReportsTab } from "@/components/dashboard/reports-tab";
+import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 
 export default function DashboardPage() {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isDataLoading, setIsDataLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('add_transaction');
 
   useEffect(() => {
     if (!loading && !user) {
@@ -46,6 +45,7 @@ export default function DashboardPage() {
            } as Transaction);
         });
         
+        // Sort on the client side to avoid composite index requirement
         userTransactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         setTransactions(userTransactions);
         setIsDataLoading(false);
@@ -57,16 +57,6 @@ export default function DashboardPage() {
       return () => unsubscribe();
     }
   }, [user]);
-
-  const handleTransactionAdded = useCallback((newTransaction: Omit<Transaction, 'id' | 'createdAt'>) => {
-    const fullTransaction: Transaction = {
-      id: Math.random().toString(), // temporary ID
-      ...newTransaction,
-      date: newTransaction.date instanceof Date ? newTransaction.date.toISOString() : newTransaction.date,
-    };
-    // @ts-ignore
-    setTransactions(prev => [fullTransaction, ...prev]);
-  }, []);
 
   if (loading || isDataLoading) {
     return (
@@ -84,12 +74,12 @@ export default function DashboardPage() {
         <SummaryCards transactions={transactions} />
         <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
           <div className="xl:col-span-2">
-            <MainTabs onTransactionAdded={handleTransactionAdded} transactions={transactions} activeTab={activeTab} setActiveTab={setActiveTab} />
+             <ReportsTab transactions={transactions} />
           </div>
           <RecentTransactions transactions={transactions} />
         </div>
       </main>
-      <ScanFab setActiveTab={setActiveTab} />
+      <TransactionFab />
     </div>
   );
 }

@@ -13,7 +13,7 @@ export function ReportsTab({ transactions }: ReportsTabProps) {
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle>Rincian Pengeluaran</CardTitle>
-          <CardDescription>Grafik ini menunjukkan pengeluaran Anda berdasarkan kategori untuk bulan ini.</CardDescription>
+          <CardDescription>Grafik ini menunjukkan pengeluaran Anda berdasarkan kategori.</CardDescription>
         </CardHeader>
         <CardContent>
           <SpendingBreakdownChart transactions={transactions} />
