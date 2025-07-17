@@ -22,7 +22,7 @@ interface RecentTransactionsProps {
 }
 
 export function RecentTransactions({ transactions }: RecentTransactionsProps) {
-  const recent = transactions.slice(0, 10);
+  const recent = transactions.slice(0, 5);
   
   const formatCurrency = (amount: number, type: 'income' | 'expense') => {
     const value = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
@@ -33,7 +33,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
     <Card className="shadow-lg">
       <CardHeader>
         <CardTitle>Transaksi Terkini</CardTitle>
-        <CardDescription>10 aktivitas keuangan terbaru Anda.</CardDescription>
+        <CardDescription>5 aktivitas keuangan terbaru Anda.</CardDescription>
       </CardHeader>
       <CardContent>
          <ScrollArea className="h-[400px]">
@@ -42,7 +42,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
               {recent.map((transaction) => (
                 <div key={transaction.id} className="flex items-center gap-4">
                   <Avatar className="hidden h-10 w-10 sm:flex bg-primary/10 text-primary">
-                    <AvatarFallback>
+                    <AvatarFallback className="bg-transparent">
                       <DynamicIcon name={categoryIcons[transaction.category] || 'Shapes'} />
                     </AvatarFallback>
                   </Avatar>
