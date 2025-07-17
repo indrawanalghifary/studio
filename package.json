@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "seed": "node scripts/seed.js"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.14.1",
@@ -42,6 +43,7 @@
     "dotenv": "^16.5.0",
     "embla-carousel-react": "^8.6.0",
     "firebase": "^10.12.3",
+    "firebase-admin": "^12.2.0",
     "framer-motion": "^11.3.19",
     "genkit": "^1.14.1",
     "lucide-react": "^0.475.0",
