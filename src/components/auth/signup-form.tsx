@@ -6,6 +6,8 @@ import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -30,19 +32,25 @@ export function SignupForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    // In a real app, you'd handle user creation here
-    console.log(values);
-
-    setTimeout(() => {
+    try {
+      await createUserWithEmailAndPassword(auth, values.email, values.password);
       toast({
         title: 'Account Created',
         description: "We've created your account for you.",
       });
       router.push('/dashboard');
+    } catch (error: any) {
+      console.error("Signup error:", error);
+       toast({
+        title: 'Signup Failed',
+        description: error.message || 'An unexpected error occurred.',
+        variant: 'destructive',
+      });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   }
 
   return (
