@@ -9,15 +9,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-  DialogClose
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, Camera, Scan, Video, Plus, ArrowUp, ArrowDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { extractTransactionFromReceipt, ExtractTransactionFromReceiptOutput } from "@/ai/flows/extract-transaction-from-receipt";
 import { AddTransactionForm } from "./add-transaction-form";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { AnimatePresence, motion } from "framer-motion";
 
 export function TransactionFab() {
