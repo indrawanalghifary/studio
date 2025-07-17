@@ -21,15 +21,7 @@ export function ReportsTab({ transactions }: ReportsTabProps) {
       </TabsList>
       <TabsContent value="reports">
         <div className="space-y-6 mt-4">
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle>Tren Keuangan</CardTitle>
-              <CardDescription>Perbandingan pemasukan dan pengeluaran Anda dari waktu ke waktu.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <IncomeExpenseChart transactions={transactions} />
-            </CardContent>
-          </Card>
+          <IncomeExpenseChart transactions={transactions} />
           
           <div className="grid gap-6 md:grid-cols-2">
             <Card className="shadow-lg">
