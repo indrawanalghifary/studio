@@ -11,7 +11,6 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { TransactionFab } from "@/components/dashboard/transaction-fab";
 import { ReportsTab } from "@/components/dashboard/reports-tab";
-import { TopCategories } from "@/components/dashboard/top-categories";
 
 export default function DashboardPage() {
   const [user, loading] = useAuthState(auth);
@@ -73,14 +72,7 @@ export default function DashboardPage() {
       <DashboardHeader />
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <SummaryCards transactions={transactions} />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <ReportsTab transactions={transactions} />
-          </div>
-          <div>
-             <TopCategories transactions={transactions} />
-          </div>
-        </div>
+        <ReportsTab transactions={transactions} />
       </main>
       <TransactionFab />
     </div>
