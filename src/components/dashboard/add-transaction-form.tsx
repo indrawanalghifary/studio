@@ -52,14 +52,16 @@ export function AddTransactionForm({ onTransactionAdded }: AddTransactionFormPro
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      await addTransaction(values);
+      const newTransaction = { ...values, createdAt: new Date() };
+      await addTransaction(newTransaction);
       toast({
         title: "Transaction added",
         description: `Successfully added ${values.type} of ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(values.amount)}.`,
         variant: "default",
         className: "bg-accent text-accent-foreground"
       });
-      onTransactionAdded(values);
+      // onTransactionAdded is handled by the real-time listener, but you could call it for optimistic updates
+      // onTransactionAdded(newTransaction);
       form.reset({ 
           type: transactionType,
           amount: 0,
