@@ -34,9 +34,10 @@ type FormSchemaType = z.infer<typeof formSchema>;
 interface AddTransactionFormProps {
   transactionType: 'income' | 'expense';
   onFormSubmit: () => void;
+  initialData?: ExtractTransactionFromReceiptOutput | null;
 }
 
-export function AddTransactionForm({ transactionType, onFormSubmit }: AddTransactionFormProps) {
+export function AddTransactionForm({ transactionType, onFormSubmit, initialData }: AddTransactionFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const { categories: userCategories, loading: loadingCategories } = useCategories();
@@ -56,45 +57,39 @@ export function AddTransactionForm({ transactionType, onFormSubmit }: AddTransac
 
   // Effect to handle data from receipt scan
   useEffect(() => {
-    const handleScanComplete = (event: Event) => {
-        const customEvent = event as CustomEvent<ExtractTransactionFromReceiptOutput>;
-        const result = customEvent.detail;
-        
-        // Only update form if the scan result type matches the current form type
-        if (result.type !== transactionType) {
-            toast({
-                title: "Jenis Transaksi Tidak Cocok",
-                description: `Hasil pindaian adalah ${result.type === 'income' ? 'Pemasukan' : 'Pengeluaran'}, tetapi formulir ini untuk ${transactionType === 'income' ? 'Pemasukan' : 'Pengeluaran'}.`,
-                variant: 'destructive',
-            });
-            return;
-        }
-
-        form.setValue('amount', result.amount);
-        form.setValue('description', result.description);
-        form.setValue('date', new Date(result.date));
-        form.setValue('type', result.type);
-        
-        const availableCategories = result.type === 'expense' ? userCategories.expense : userCategories.income;
-        if (availableCategories.includes(result.category)) {
-            form.setValue('category', result.category);
-        } else {
-            form.setValue('category', 'Lainnya');
-        }
-
+    if (!initialData) return;
+    
+    // Only update form if the scan result type matches the current form type
+    if (initialData.type !== transactionType) {
         toast({
-            title: "Pindai Selesai",
-            description: "Formulir telah diisi dengan data dari struk.",
-            variant: 'default',
-            className: "bg-accent text-accent-foreground"
+            title: "Jenis Transaksi Tidak Cocok",
+            description: `Hasil pindaian adalah ${initialData.type === 'income' ? 'Pemasukan' : 'Pengeluaran'}, tetapi formulir ini untuk ${transactionType === 'income' ? 'Pemasukan' : 'Pengeluaran'}. Silakan coba lagi.`,
+            variant: 'destructive',
         });
-    };
+        return;
+    }
 
-    window.addEventListener('scanComplete', handleScanComplete);
-    return () => {
-        window.removeEventListener('scanComplete', handleScanComplete);
-    };
-  }, [form, toast, transactionType, userCategories]);
+    form.setValue('amount', initialData.amount);
+    form.setValue('description', initialData.description);
+    // Ensure date is a valid Date object
+    const scannedDate = new Date(initialData.date);
+    form.setValue('date', isNaN(scannedDate.getTime()) ? new Date() : scannedDate);
+    form.setValue('type', initialData.type);
+    
+    const availableCategories = initialData.type === 'expense' ? userCategories.expense : userCategories.income;
+    if (availableCategories.includes(initialData.category)) {
+        form.setValue('category', initialData.category);
+    } else {
+        form.setValue('category', 'Lainnya');
+    }
+
+    toast({
+        title: "Pindai Selesai",
+        description: "Formulir telah diisi dengan data dari struk.",
+        variant: 'default',
+        className: "bg-accent text-accent-foreground"
+    });
+  }, [initialData, form, toast, transactionType, userCategories]);
   
   async function onSubmit(values: FormSchemaType) {
     setIsLoading(true);

@@ -21,6 +21,7 @@ export function TransactionFab() {
   const { toast } = useToast();
   const [isFabOpen, setIsFabOpen] = useState(false);
   const [dialogContent, setDialogContent] = useState<'income' | 'expense' | 'scan' | null>(null);
+  const [scanResult, setScanResult] = useState<ExtractTransactionFromReceiptOutput | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -29,6 +30,7 @@ export function TransactionFab() {
   const onDialogOpenChange = (open: boolean) => {
     if (!open) {
       setDialogContent(null);
+      setScanResult(null); // Clear scan result when any dialog is closed
     }
   };
 
@@ -88,11 +90,7 @@ export function TransactionFab() {
 
     try {
       const result = await extractTransactionFromReceipt({ photoDataUri });
-      
-      const event = new CustomEvent<ExtractTransactionFromReceiptOutput>('scanComplete', { detail: result });
-      window.dispatchEvent(event);
-      
-      // Open the correct form dialog based on scan result
+      setScanResult(result);
       setDialogContent(result.type); 
 
     } catch (error) {
@@ -184,7 +182,8 @@ export function TransactionFab() {
               <div className="py-4">
                 <AddTransactionForm 
                   transactionType={dialogContent}
-                  onFormSubmit={() => setDialogContent(null)} 
+                  onFormSubmit={() => setDialogContent(null)}
+                  initialData={scanResult}
                 />
               </div>
             </>

@@ -26,7 +26,7 @@ const allCategories = [...defaultExpenseCategories, ...defaultIncomeCategories].
 const ExtractTransactionFromReceiptOutputSchema = z.object({
     amount: z.number().describe('Jumlah total transaksi. Temukan grand total.'),
     category: z.string().describe(`Kategori transaksi. Pilih dari daftar berikut: ${allCategories.join(', ')}`),
-    date: z.string().describe('Tanggal transaksi dalam format YYYY-MM-DD.'),
+    date: z.string().describe('Tanggal transaksi dalam format YYYY-MM-DD. Jika tidak ditemukan, gunakan hari ini.'),
     description: z.string().describe('Deskripsi singkat transaksi, biasanya nama toko atau merchant.'),
     type: z.enum(['income', 'expense']).describe('Jenis transaksi. Sebagian besar struk adalah pengeluaran.'),
 });
