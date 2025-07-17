@@ -36,7 +36,7 @@ export function ReportsTab({ transactions }: ReportsTabProps) {
   const [currentTab, setCurrentTab] = useState('reports');
   const currentDate = new Date();
   const [selectedYear, setSelectedYear] = useState<number>(currentDate.getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState<number>(currentDate.getMonth()); // 0-11 for Jan-Dec
+  const [selectedMonth, setSelectedMonth] = useState<number>(currentDate.getMonth()); // 0-11 for Jan-Dec, -1 for all
 
   const yearOptions = useMemo(() => generateYearOptions(transactions), [transactions]);
 
@@ -45,7 +45,10 @@ export function ReportsTab({ transactions }: ReportsTabProps) {
 
     return transactions.filter(t => {
       const transactionDate = new Date(t.date);
-      return transactionDate.getFullYear() === selectedYear && transactionDate.getMonth() === selectedMonth;
+      const yearMatch = transactionDate.getFullYear() === selectedYear;
+      // -1 means all months
+      const monthMatch = selectedMonth === -1 || transactionDate.getMonth() === selectedMonth;
+      return yearMatch && monthMatch;
     });
   }, [transactions, selectedYear, selectedMonth, currentTab]);
 
@@ -73,6 +76,7 @@ export function ReportsTab({ transactions }: ReportsTabProps) {
                     <SelectValue placeholder="Pilih Bulan" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="-1">Semua Bulan</SelectItem>
                     {monthNames.map((month, index) => (
                       <SelectItem key={index} value={String(index)}>
                         {month}
