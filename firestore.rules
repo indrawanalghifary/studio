@@ -1,11 +1,47 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can only read and write their own transactions
+    // Users can only read, write, and update their own transactions.
     match /transactions/{transactionId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+
+      // A user must be authenticated to perform any action.
+      function isAuthenticated() {
+        return request.auth != null;
+      }
+
+      // The user creating the transaction must be the owner.
+      function isOwner() {
+        return request.auth.uid == request.resource.data.userId;
+      }
+      
+      // The user accessing an existing transaction must be the owner.
+      function isExistingOwner() {
+        return request.auth.uid == resource.data.userId;
+      }
+
+      // Validate the data for a new or updated transaction.
+      function isValidTransactionData(data) {
+        return data.userId is string &&
+               data.description is string && data.description.size() > 0 &&
+               data.amount is number && data.amount > 0 &&
+               data.category is string && data.category.size() > 0 &&
+               data.type is string && (data.type == 'income' || data.type == 'expense') &&
+               data.date is timestamp;
+      }
+
+      // Allow creating a transaction if user is authenticated, is the owner,
+      // and the data is valid.
+      allow create: if isAuthenticated() && isOwner() && isValidTransactionData(request.resource.data);
+      
+      // Allow reading, updating, and deleting if the user is the owner.
+      allow read, delete: if isAuthenticated() && isExistingOwner();
+      
+      // Allow updating if the user is the owner, data is valid, and critical
+      // fields like userId and createdAt are not changed.
+      allow update: if isAuthenticated() && isExistingOwner() && isValidTransactionData(request.resource.data)
+                    && request.resource.data.userId == resource.data.userId
+                    && request.resource.data.createdAt == resource.data.createdAt;
     }
   }
 }
