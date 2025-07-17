@@ -41,7 +41,8 @@ export default function DashboardPage() {
           userTransactions.push({ 
             id: doc.id,
             ...data,
-            date: data.date.toDate ? data.date.toDate().toISOString() : data.date,
+            date: data.date?.toDate ? data.date.toDate().toISOString() : data.date,
+            createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : data.createdAt,
            } as Transaction);
         });
         
