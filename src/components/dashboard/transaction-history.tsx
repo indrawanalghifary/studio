@@ -183,15 +183,15 @@ export function TransactionHistory({ transactions }: TransactionHistoryProps) {
 
         <div className="flex flex-col sm:flex-row justify-end gap-4 sm:gap-8 text-right px-2">
             <div>
-                <div className="text-sm text-muted-foreground">Total Pemasukan (Difilter)</div>
+                <div className="text-sm text-muted-foreground">Total Pemasukan</div>
                 <div className="text-lg font-bold text-green-500">{formatCurrency(totalIncome)}</div>
             </div>
             <div>
-                <div className="text-sm text-muted-foreground">Total Pengeluaran (Difilter)</div>
+                <div className="text-sm text-muted-foreground">Total Pengeluaran</div>
                 <div className="text-lg font-bold text-red-500">{formatCurrency(totalExpenses)}</div>
             </div>
              <div>
-                <div className="text-sm text-muted-foreground">Total Bersih (Difilter)</div>
+                <div className="text-sm text-muted-foreground">Total Bersih</div>
                 <div className={`text-lg font-bold ${netTotal >= 0 ? 'text-foreground' : 'text-destructive'}`}>{formatCurrency(netTotal)}</div>
             </div>
         </div>
