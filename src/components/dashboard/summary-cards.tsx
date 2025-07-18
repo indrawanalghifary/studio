@@ -44,7 +44,7 @@ export function SummaryCards({ transactions }: SummaryCardsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-green-500">{formatCurrency(income)}</div>
-          <p className="text-xs text-muted-foreground">Total pemasukan bulan ini</p>
+          <p className="text-xs text-muted-foreground">Total pemasukan</p>
         </CardContent>
       </Card>
       <Card className="shadow-lg transition-all duration-300 hover:shadow-xl">
@@ -54,7 +54,7 @@ export function SummaryCards({ transactions }: SummaryCardsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-red-500">{formatCurrency(expenses)}</div>
-          <p className="text-xs text-muted-foreground">Total pengeluaran bulan ini</p>
+          <p className="text-xs text-muted-foreground">Total pengeluaran</p>
         </CardContent>
       </Card>
     </div>
