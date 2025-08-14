@@ -11,7 +11,7 @@ import { Calendar as CalendarIcon, Loader2, ArrowRightLeft } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/input"; // Assuming this is your Shadcn UI Input
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -40,6 +40,10 @@ interface AddTransactionFormProps {
 export function AddTransactionForm({ transactionType, onFormSubmit, initialData }: AddTransactionFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  // State to hold the displayed amount with separators
+  const [displayAmount, setDisplayAmount] = useState('');
+
+
   const { categories: userCategories, loading: loadingCategories } = useCategories();
   
   const currentCategoryList = transactionType === 'expense' ? userCategories.expense : userCategories.income;
@@ -69,7 +73,10 @@ export function AddTransactionForm({ transactionType, onFormSubmit, initialData 
         return;
     }
 
+    // Set the form value for submission
     form.setValue('amount', initialData.amount);
+    // Format the amount for display in the input field
+    setDisplayAmount(formatNumberWithDots(initialData.amount));
     form.setValue('description', initialData.description);
     // Ensure date is a valid Date object
     const scannedDate = new Date(initialData.date);
@@ -91,6 +98,33 @@ export function AddTransactionForm({ transactionType, onFormSubmit, initialData 
     });
   }, [initialData, form, toast, transactionType, userCategories]);
   
+  // Helper function to format number with dots as thousand separators
+  const formatNumberWithDots = (value: number | string): string => {
+    // Remove non-digit characters first
+    const num = String(value).replace(/\D/g, '');
+    if (num === '') return '';
+    // Add dots as thousand separators
+    return num.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
+
+  // Handle amount input change
+  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = event.target.value.replace(/\D/g, ''); // Remove non-digits for the actual value
+    const formattedValue = formatNumberWithDots(rawValue); // Format for display
+
+    setDisplayAmount(formattedValue);
+    // Update react-hook-form value with the raw number (or 0 if empty)
+    form.setValue('amount', rawValue === '' ? 0 : parseFloat(rawValue));
+  };
+
+  // Manually handle blur to re-format if needed (optional, but good for consistency)
+  const handleAmountBlur = () => {
+      const rawValue = form.getValues('amount');
+      if (rawValue !== 0) {
+          setDisplayAmount(formatNumberWithDots(rawValue));
+      }
+  };
+
   async function onSubmit(values: FormSchemaType) {
     setIsLoading(true);
     try {
@@ -126,7 +160,12 @@ export function AddTransactionForm({ transactionType, onFormSubmit, initialData 
               <FormItem>
                 <FormLabel>Jumlah</FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="0" {...field} />
+                  <Input
+                    type="text" // Use text type to allow dots while typing
+                    placeholder="0"
+                    value={displayAmount} // Bind input value to the formatted state
+                    onChange={handleAmountChange} // Use custom change handler
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
