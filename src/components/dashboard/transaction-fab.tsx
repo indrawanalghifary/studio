@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"; import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Loader2, Camera, Scan, Video, Plus, ArrowUp, ArrowDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -25,6 +25,7 @@ export function TransactionFab() {
   const [isScanning, setIsScanning] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const onDialogOpenChange = (open: boolean) => {
@@ -38,7 +39,7 @@ export function TransactionFab() {
     setDialogContent(content);
     setIsFabOpen(false);
   };
-  
+
   useEffect(() => {
     let stream: MediaStream | null = null;
     
@@ -106,6 +107,39 @@ export function TransactionFab() {
     }
   };
 
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Format File Tidak Didukung",
+        description: "Mohon unggah file gambar (JPEG, PNG, dll.).",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsFabOpen(false); // Close FAB menu
+    setDialogContent(null);
+    // setDialogContent('scan'); // Show scanning dialog while processing
+    setIsScanning(true);
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const photoDataUri = reader.result as string;
+      try {
+        const result = await extractTransactionFromReceipt({ photoDataUri });
+        setScanResult(result);
+        setDialogContent(result.type); // Open the appropriate form with scanned data
+      } catch (error) {
+        console.error("Error analyzing receipt file:", error);
+        toast({ title: "Pindai Gagal", description: "Tidak dapat mengekstrak data dari file. Silakan coba lagi.", variant: "destructive", });
+        setDialogContent(null); // Close dialog on error
+      } finally { setIsScanning(false); }
+    };
+    reader.readAsDataURL(file);
+  };
   return (
     <>
       <div className="fixed bottom-6 right-6 z-50">
@@ -118,6 +152,10 @@ export function TransactionFab() {
                 exit={{ opacity: 0, y: 20 }}
                 transition={{ duration: 0.2 }}
               >
+                <Input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
+                <Button className="h-14 w-14 rounded-full shadow-lg" size="icon" onClick={() => fileInputRef.current?.click()}>
+                  <Scan className="h-7 w-7" />
+                </Button>
                  <Button className="h-14 w-14 rounded-full shadow-lg" size="icon" onClick={() => handleFabClick('scan')}>
                   <Camera className="h-7 w-7" />
                 </Button>

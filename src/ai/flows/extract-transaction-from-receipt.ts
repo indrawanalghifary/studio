@@ -47,6 +47,7 @@ const prompt = ai.definePrompt({
 - Tentukan tanggal transaksi.
 - Kategorikan transaksi berdasarkan item atau nama merchant. Transaksi kemungkinan besar adalah 'pengeluaran'.
 - Berdasarkan konten, tentukan apakah ini transaksi 'pemasukan' atau 'pengeluaran'.
+- verifikasi total nominal dalam Rupiah dan pastikan totalnya rasional terutama dalam pemisahan desimal 'titik' atau 'koma' karena terkadang ada yang menggunakan titik dan koma 
 
 Kembalikan data dalam format JSON yang ditentukan.
 
